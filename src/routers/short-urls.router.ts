@@ -54,25 +54,32 @@ shortUrlsRouter.post(
 
         const url = req.body.url as string;
 
-        const last_row_result = await db
-            .select()
-            .from(shortUrlsTable)
-            .orderBy(desc(shortUrlsTable.created_at))
-            .limit(1);
+        try {
+            const last_row_result = await db
+                .select()
+                .from(shortUrlsTable)
+                .orderBy(desc(shortUrlsTable.created_at))
+                .limit(1);
 
-        const last_row_id = last_row_result[0] ? last_row_result[0].id : 1000;
-        const id = last_row_id + 1;
-        const short_code = encode(id);
+            const last_row_id = last_row_result[0]
+                ? last_row_result[0].id
+                : 1000;
+            const id = last_row_id + 1;
+            const short_code = encode(id);
 
-        await db.insert(shortUrlsTable).values({
-            long_url: url,
-            short_code,
-        });
+            await db.insert(shortUrlsTable).values({
+                long_url: url,
+                short_code,
+            });
 
-        res.json({
-            url,
-            short_code,
-        });
+            res.json({
+                url,
+                short_code,
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
     }
 );
 
