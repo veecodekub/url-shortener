@@ -1,0 +1,18 @@
+# Ignore artifacts
+build
+coverage
+
+# Ignore typical build/dependency directories and files
+node_modules
+/dist
+/build
+.env
+.env.*
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+bun.lock
+
+# Ignore specific development/OS files
+.DS_Store
+*.tgz
