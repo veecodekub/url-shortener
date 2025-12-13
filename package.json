@@ -8,26 +8,36 @@
         "start": "bun src/index.ts",
         "format": "prettier --write .",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "db:push": "bunx drizzle-kit push",
+        "db:generate": "bunx drizzle-kit generate",
+        "db:migrate": "bunx drizzle-kit migrate",
+        "db:studio": "bunx drizzle-kit studio"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",
         "@types/bun": "latest",
         "@types/express": "^5.0.6",
         "@types/node": "^25.0.1",
+        "@types/pg": "^8.16.0",
         "@types/supertest": "^6.0.3",
+        "drizzle-kit": "^0.31.8",
         "eslint": "^9.39.2",
         "globals": "^16.5.0",
         "jiti": "^2.6.1",
         "prettier": "3.7.4",
         "supertest": "^7.1.4",
+        "tsx": "^4.21.0",
         "typescript-eslint": "^8.49.0"
     },
     "peerDependencies": {
         "typescript": "^5"
     },
     "dependencies": {
+        "dotenv": "^17.2.3",
+        "drizzle-orm": "^0.45.1",
         "express": "^5.2.1",
+        "pg": "^8.16.3",
         "zod": "^4.1.13"
     }
 }
