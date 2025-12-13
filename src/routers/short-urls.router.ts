@@ -1,9 +1,14 @@
 import express, { type Request, type Response } from 'express';
-import { decode, encode } from '../utils/base62.util';
 import { body, param, validationResult } from 'express-validator';
 import { db } from '../db';
 import { shortUrlsTable } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet(
+    '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    10
+);
 
 const shortUrlsRouter = express.Router();
 
@@ -17,11 +22,10 @@ shortUrlsRouter.get(
         }
 
         const short_code = req.params.short_code as string;
-        const id = decode(short_code);
 
         try {
             const short_url = await db.query.shortUrlsTable.findFirst({
-                where: eq(shortUrlsTable.id, id),
+                where: eq(shortUrlsTable.short_code, short_code),
             });
 
             if (!short_url) {
@@ -31,9 +35,9 @@ shortUrlsRouter.get(
             await db
                 .update(shortUrlsTable)
                 .set({
-                    clicks: (short_url.clicks ?? 0) + 1,
+                    clicks: sql`${shortUrlsTable.clicks} + 1`,
                 })
-                .where(eq(shortUrlsTable.id, id));
+                .where(eq(shortUrlsTable.id, short_url.id));
 
             res.redirect(short_url.long_url);
         } catch (error) {
@@ -55,22 +59,32 @@ shortUrlsRouter.post(
         const url = req.body.url as string;
 
         try {
-            const last_row_result = await db
-                .select()
-                .from(shortUrlsTable)
-                .orderBy(desc(shortUrlsTable.created_at))
-                .limit(1);
-
-            const last_row_id = last_row_result[0]
-                ? last_row_result[0].id
-                : 1000;
-            const id = last_row_id + 1;
-            const short_code = encode(id);
+            const short_code = nanoid();
 
             await db.insert(shortUrlsTable).values({
                 long_url: url,
                 short_code,
             });
+
+            // // 1. Insert ลงไปก่อน เพื่อจอง ID (Atomic operation)
+            // // database จะจัดการเรื่อง concurrency ให้เอง ไม่ต้องกลัวซ้ำ
+            // const insertedResult = await db
+            //     .insert(shortUrlsTable)
+            //     .values({
+            //         long_url: url,
+            //     })
+            //     .returning({ id: shortUrlsTable.id }); // ดึง ID ที่เพิ่งสร้างออกมา
+
+            // const newId = insertedResult[0]!.id;
+
+            // // 2. คำนวณ Short Code จาก ID ที่ได้จริง
+            // const short_code = encode(newId);
+
+            // // 3. Update short_code กลับเข้าไปใน row นั้น
+            // await db
+            //     .update(shortUrlsTable)
+            //     .set({ short_code })
+            //     .where(eq(shortUrlsTable.id, newId));
 
             res.json({
                 url,
