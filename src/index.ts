@@ -1,11 +1,15 @@
 import express from 'express';
 import { env } from './env';
 import shortUrlsRouter from './routers/short-urls.router';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
 const app = express();
 const port = env.PORT;
 
+app.use(helmet());
 app.use(express.json());
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
     res.send('Hello World with Bun and Express!');
