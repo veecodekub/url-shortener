@@ -10,11 +10,26 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: Set up PostgreSQL
+              uses: harmon758/postgresql-action@v1
+              with:
+                  postgresql version: '15'
+                  postgresql db: 'testdb'
+                  postgresql user: 'testuser'
+                  postgresql password: 'testpassword'
+
             - name: Install bun
               uses: oven-sh/setup-bun@v2
 
             - name: Install dependencies
               run: bun install
 
+            - name: Run database migrations
+              run: bunx drizzle-kit migrate
+              env:
+                  DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
+
             - name: Run tests
               run: bun test
+              env:
+                  DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
