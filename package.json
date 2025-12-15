@@ -9,10 +9,10 @@
         "format": "prettier --write .",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "db:push": "bunx drizzle-kit push",
-        "db:generate": "bunx drizzle-kit generate",
-        "db:migrate": "bunx drizzle-kit migrate",
-        "db:studio": "bunx drizzle-kit studio"
+        "db:push": "bunx drizzle-kit push --config=drizzle-dev.config.ts",
+        "db:generate": "bunx drizzle-kit generate --config=drizzle-dev.config.ts",
+        "db:migrate": "bunx drizzle-kit migrate --config=drizzle-dev.config.ts",
+        "db:studio": "bunx drizzle-kit studio --config=drizzle-dev.config.ts"
     },
     "devDependencies": {
         "@eslint/js": "^9.39.2",

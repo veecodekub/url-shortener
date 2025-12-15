@@ -25,7 +25,9 @@ jobs:
               run: bun install
 
             - name: Run database migrations
-              run: bunx drizzle-kit migrate
+              run: |
+                  bunx drizzle-kit generate --config=drizzle-test.config.ts
+                  bunx drizzle-kit push --config=drizzle-test.config.ts
               env:
                   DATABASE_URL: postgres://testuser:testpassword@localhost:5432/testdb
 
