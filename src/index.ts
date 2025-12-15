@@ -1,8 +1,8 @@
 import express from 'express';
-import { env } from './env';
-import shortUrlsRouter from './routers/short-urls.router';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { env } from './env';
+import shortUrlsRouter from './routers/short-urls.router';
 
 const app = express();
 const port = env.PORT;
