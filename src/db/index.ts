@@ -6,4 +6,5 @@ export const db = drizzle(env.DATABASE_URL, {
     schema: {
         shortUrlsTable,
     },
+    logger: env.NODE_ENV === 'development',
 });
