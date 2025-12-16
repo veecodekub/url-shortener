@@ -24,20 +24,17 @@ shortUrlsRouter.get(
         const short_code = req.params.short_code as string;
 
         try {
-            const short_url = await db.query.shortUrlsTable.findFirst({
-                where: eq(shortUrlsTable.short_code, short_code),
-            });
-
-            if (!short_url) {
-                return res.status(404).json({ error: 'Short URL not found' });
-            }
-
-            await db
+            const [short_url] = await db
                 .update(shortUrlsTable)
                 .set({
                     clicks: sql`${shortUrlsTable.clicks} + 1`,
                 })
-                .where(eq(shortUrlsTable.id, short_url.id));
+                .where(eq(shortUrlsTable.short_code, short_code))
+                .returning({ long_url: shortUrlsTable.long_url });
+
+            if (!short_url) {
+                return res.status(404).json({ error: 'Short URL not found' });
+            }
 
             res.redirect(short_url.long_url);
         } catch (error) {
