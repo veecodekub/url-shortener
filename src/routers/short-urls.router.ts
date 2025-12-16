@@ -1,9 +1,9 @@
+import { eq, sql } from 'drizzle-orm';
 import express, { type Request, type Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
+import { customAlphabet } from 'nanoid';
 import { db } from '../db';
 import { shortUrlsTable } from '../db/schema';
-import { eq, sql } from 'drizzle-orm';
-import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet(
     '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -65,26 +65,6 @@ shortUrlsRouter.post(
                 long_url: url,
                 short_code,
             });
-
-            // // 1. Insert ลงไปก่อน เพื่อจอง ID (Atomic operation)
-            // // database จะจัดการเรื่อง concurrency ให้เอง ไม่ต้องกลัวซ้ำ
-            // const insertedResult = await db
-            //     .insert(shortUrlsTable)
-            //     .values({
-            //         long_url: url,
-            //     })
-            //     .returning({ id: shortUrlsTable.id }); // ดึง ID ที่เพิ่งสร้างออกมา
-
-            // const newId = insertedResult[0]!.id;
-
-            // // 2. คำนวณ Short Code จาก ID ที่ได้จริง
-            // const short_code = encode(newId);
-
-            // // 3. Update short_code กลับเข้าไปใน row นั้น
-            // await db
-            //     .update(shortUrlsTable)
-            //     .set({ short_code })
-            //     .where(eq(shortUrlsTable.id, newId));
 
             res.json({
                 url,
